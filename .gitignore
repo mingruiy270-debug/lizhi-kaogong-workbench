@@ -1,6 +1,7 @@
 node_modules/
 out/
 dist/
+dist-release/
 artifacts/
 .venv-markitdown/
 coverage/
