@@ -15,6 +15,30 @@ function temporaryDirectory(prefix: string): string {
   return path
 }
 
+function useFakeConversionEngine(service: KnowledgeBuilderService): void {
+  vi.spyOn(service, 'engineStatus').mockResolvedValue({
+    available: true,
+    installing: false,
+    version: 'test',
+    pythonPath: 'test-python',
+    message: 'Test conversion engine is ready',
+    supportedExtensions: ['.txt']
+  })
+  const conversionTarget = service as unknown as {
+    convert: (
+      pythonPath: string,
+      workerPath: string,
+      sourcePath: string,
+      outputPath: string
+    ) => Promise<void>
+  }
+  vi.spyOn(conversionTarget, 'convert').mockImplementation(
+    async (_pythonPath, _workerPath, sourcePath, outputPath) => {
+      writeFileSync(outputPath, readFileSync(sourcePath, 'utf8'), 'utf8')
+    }
+  )
+}
+
 afterEach(() => {
   for (const path of temporaryDirectories.splice(0)) rmSync(path, { recursive: true, force: true })
 })
@@ -59,6 +83,7 @@ describe('knowledge builder', () => {
       {} as AiService,
       {} as VaultService
     )
+    useFakeConversionEngine(service)
     const scan = service.scan(source)
     const file = scan.files.find((item) => item.eligible)
     expect(file).toBeDefined()
@@ -180,6 +205,7 @@ describe('knowledge builder', () => {
     const service = new KnowledgeBuilderService(data, process.cwd(), fakeAi, {
       connect
     } as unknown as VaultService)
+    useFakeConversionEngine(service)
     const scan = service.scan(source)
     const started = await service.startJob({
       sourcePath: source,
