@@ -1,0 +1,81 @@
+{
+  "name": "lizhi-kaogong-workbench",
+  "version": "0.3.0",
+  "private": true,
+  "license": "MIT",
+  "description": "砺知考公工作台，本地优先的公考学习桌面应用",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mingruiy270-debug/lizhi-kaogong-workbench.git"
+  },
+  "homepage": "https://github.com/mingruiy270-debug/lizhi-kaogong-workbench#readme",
+  "bugs": {
+    "url": "https://github.com/mingruiy270-debug/lizhi-kaogong-workbench/issues"
+  },
+  "main": "out/main/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "preview": "electron-vite preview",
+    "package": "npm run build && electron-builder --win nsis",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@fluentui/react-components": "9.74.6",
+    "@phosphor-icons/react": "2.1.10",
+    "gray-matter": "4.0.3",
+    "katex": "0.18.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-markdown": "10.1.0",
+    "react-router-dom": "7.18.2",
+    "recharts": "3.10.1",
+    "rehype-katex": "7.0.1",
+    "remark-gfm": "4.0.1",
+    "zustand": "5.0.15"
+  },
+  "devDependencies": {
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "5.0.4",
+    "electron": "43.4.0",
+    "electron-builder": "26.15.3",
+    "electron-vite": "5.0.0",
+    "prettier": "3.9.6",
+    "typescript": "7.0.2",
+    "vite": "7.3.6",
+    "vitest": "4.1.10"
+  },
+  "build": {
+    "appId": "com.local.lizhi.kaogong",
+    "productName": "砺知考公工作台",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "tools/markitdown-worker.py",
+        "to": "tools/markitdown-worker.py"
+      }
+    ],
+    "asar": true,
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}

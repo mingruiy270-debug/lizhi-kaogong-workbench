@@ -1,0 +1,6 @@
+.venv-markitdown/
+artifacts/
+dist/
+node_modules/
+out/
+*.tsbuildinfo
