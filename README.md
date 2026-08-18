@@ -4,17 +4,96 @@
 [![CI](https://github.com/mingruiy270-debug/lizhi-kaogong-workbench/actions/workflows/ci.yml/badge.svg)](https://github.com/mingruiy270-debug/lizhi-kaogong-workbench/actions/workflows/ci.yml)
 [![Latest Release](https://img.shields.io/github/v/release/mingruiy270-debug/lizhi-kaogong-workbench)](https://github.com/mingruiy270-debug/lizhi-kaogong-workbench/releases/latest)
 
-> 开源、本地优先、可自定义知识库的私人公考学习工作台。
+一个开源、本地优先、支持自定义知识库与可选 AI 的私人公考学习工作台。
 
-砺知考公工作台是一个 clean-room 实现的本地优先公考学习桌面应用。它保留经过验证的学习流程，但不复制第三方程序代码、商标、授权机制或专有视觉资产。
+砺知考公工作台用于集中管理题库、知识文档、错题、笔记、模考和学习计划。基础学习功能可以离线运行；需要 AI 时，可以连接自己选择的云端模型，也可以使用 Ollama、LM Studio 等本地模型。
 
-它适合希望把自己的真题、讲义、错题和方法论统一管理，又不想把学习数据锁在某个在线平台中的备考者。基础训练完全离线可用，AI 是可选增强项。
+## 功能概览
 
-## 下载体验
+| 模块       | 功能                                                                               |
+| ---------- | ---------------------------------------------------------------------------------- |
+| 知识库     | 导入 Markdown 题目与知识文档，多知识库切换、增量索引、全文搜索、分类筛选和快照回滚 |
+| 行测训练   | 顺序、随机、自适应训练，即时或汇总解析，断点续练、不确定标记、收藏和笔记           |
+| 错题复习   | 错因记录、相似题、分级间隔复习和 AI 深度讲解                                       |
+| 模拟考试   | 计时作答、逐题保存、到时交卷、断点续答和历史成绩                                   |
+| 申论训练   | 草稿自动保存、本地规则评估和可选 AI 语义评估                                       |
+| 学习分析   | 学习报告、本地能力诊断、计划生成与进度记录                                         |
+| AI 训练    | 学习问答、错题分析、学习诊断和双阶段变式题生成与复核                               |
+| 知识库工坊 | 本地资料转换、LLM 结构化整理、人工审核和知识库发布                                 |
+| 环境与数据 | 模型设置、Obsidian 连接、环境诊断、数据库备份和恢复                                |
 
-前往 [GitHub Releases](https://github.com/mingruiy270-debug/lizhi-kaogong-workbench/releases/latest) 下载 Windows 安装包。当前构建尚未购买商业代码签名证书，Windows SmartScreen 可能提示“未知发布者”，请在 Release 页面核对 SHA-256 后使用。
+## 下载安装
 
-如果只想从源码启动：
+在 [GitHub Releases](https://github.com/mingruiy270-debug/lizhi-kaogong-workbench/releases/latest) 下载 Windows x64 安装包，并使用同页的 `SHA256SUMS.txt` 校验文件完整性。
+
+安装后可以直接使用内置示例知识库体验训练、模考、申论和报告功能。模型与自定义资料均为可选配置。
+
+## 快速开始
+
+### 1. 连接自己的 Markdown 知识库
+
+进入“知识库设置”，选择一个 Markdown 文件夹。应用会读取其中的题目和知识文档，建立本地索引，并保留原文件路径用于查看和重新索引。
+
+知识库支持：
+
+- 行测与申论题目
+- 单选、多选、判断和主观题
+- 知识、方法和规律文档
+- 年份、地区、试卷、难度与标签
+- Markdown 表格、公式和受控本地图片
+
+现有格式说明见 [架构文档](docs/architecture.md)。
+
+### 2. 配置模型（可选）
+
+进入“模型设置”，选择服务类型，填写模型地址、模型名称和 API Key，然后执行连接测试。
+
+API Key 使用 Electron `safeStorage` 加密保存，不写入 `.env`、Markdown 知识库或页面日志。清除凭据后，基础训练功能仍可继续使用。
+
+### 3. 建立自己的知识库
+
+进入“知识库工坊”，按以下流程处理本地资料：
+
+```text
+PDF / Word / 表格 / 网页等本地资料
+  → Microsoft MarkItDown 本地转换
+  → 自己配置的 LLM 提取与整理
+  → 可选的第二阶段质量复核
+  → 人工批准或驳回
+  → 发布到工作台知识库
+```
+
+当前转换格式包括 PDF、DOCX、PPTX、XLSX、XLS、HTML、CSV、JSON、XML、TXT、Markdown、EPUB、MSG 和 EML。
+
+可以选择：
+
+- 自动识别题目与知识文档
+- 只生成题目
+- 只生成知识文档
+- 仅转换为 Markdown，不调用模型
+- 标准单阶段整理
+- 高质量双阶段整理与复核
+
+生成内容先进入待审核区，只有人工批准的条目才会发布。完整说明见 [知识库工坊文档](docs/knowledge-builder.md)。
+
+## 数据与隐私
+
+- 学习记录、设置、索引和备份保存在本机应用数据目录。
+- 原料目录以只读方式扫描和转换，应用不会修改源文件。
+- MarkItDown 转换进程不会获得模型 API Key。
+- 使用云端模型时，只发送用户主动提交的当前任务内容。
+- 使用本地模型或“仅转换 Markdown”模式时，可以让对应流程保持在本机运行。
+- AI 生成的题目与知识不会自动进入正式知识库。
+
+## Prompt 设计
+
+每个 AI 功能都有独立的任务协议，包括角色、证据边界、处理步骤、输出格式和质量检查。题目、统计、答案、来源正文和候选 JSON 会被标记为待分析数据，避免材料中的文字改变当前任务。
+
+详细设计见 [LLM Prompt 设计](docs/prompt-design.md)。
+
+## 从源码运行
+
+需要 Node.js 24、npm 和 Windows 开发环境。知识库工坊还需要 Python 3.10 以上版本。
 
 ```powershell
 git clone https://github.com/mingruiy270-debug/lizhi-kaogong-workbench.git
@@ -23,78 +102,32 @@ npm ci
 npm run dev
 ```
 
-## 核心原则
-
-- 官方或用户导入内容只读，学习数据独立保存。
-- 基础做题、错题、模考和报告无需 AI 或外部运行时。
-- API 凭据使用 Electron `safeStorage` 加密后落盘，不以明文写入配置文件。
-- AI 草稿和生成训练不写回正式知识库。
-- 不实现或绕过第三方 `.akvault` 授权。应用支持用户拥有的 Markdown Vault。
-
-## 已实现功能
-
-- Markdown 题目与知识文档导入、校验、增量索引、搜索和稳定题号。
-- 多 Vault 切换、跨库题号隔离、索引快照回滚，以及年份、地区、试卷筛选。
-- Markdown 材料、公式、表格和受控本地图片附件。
-- 顺序、随机、自适应专项训练，即时或汇总解析、断点续练、不确定标记、错因、收藏、笔记、相似题和分级间隔复习。
-- 行测模考计时、逐题自动保存、到时自动交卷、断点续答、不可变题目快照、原子交卷和历史成绩。
-- 申论草稿自动保存、本地规则评分、可选 AI 语义评估。
-- 学习报告与导出、本地能力诊断、可选 AI 汇总解读、计划预览、应用和进度记录。
-- 13 类模型服务、5 种协议、模型发现、连接验证、独立删除凭据、当前题白名单深讲和双阶段 AI 变式质检。
-- 统一的模块化 Prompt 协议：自由问答、错题讲解、申论评估、学习诊断、变式生成/终审和知识提取/终审分别约束角色、证据、流程、输出与质检。
-- Obsidian 可选连接、`.obsidian` 备份/恢复/安全模式、环境诊断、数据库备份和失败自动回滚恢复。
-- 学习数据单独重置，保留知识库、应用设置和模型配置。
-- 内置知识库工坊：本地原料扫描、Microsoft MarkItDown 转换、可配置 LLM 提炼、两阶段审校、人工批准和应用管理库发布。
-- 工坊任务支持逐文件失败隔离、取消、失败重试、中断恢复、转换缓存、来源定位和仅转换模式。
-
-飞书与 OpenClaw 已按产品需求完全移除，不保留菜单、配置、诊断或空占位。此 clean-room 应用也不包含第三方授权页、激活逻辑和受保护内容包解密能力。
-
-## API Key
-
-进入“模型设置”，选择服务类型并填写模型名称和 API Key，点击“保存配置”后再点击“测试连接”。也可在保存凭据后获取提供商返回的模型列表。API Key 不写入 `.env` 或项目文件，不会从其他软件的凭据库中提取，并可在设置页单独删除。
-
-使用云模型时，当前任务中提交的题目、答案或知识片段会发送给用户自己配置的模型服务商；选择 Ollama、LM Studio 或知识工坊的“仅转换 Markdown”模式时可以保持本地处理。应用不会在后台自动上传整个知识库。
-
-## 自建知识库
-
-进入“知识库工坊”，首次使用点击“安装转换引擎”。应用会在自己的数据目录创建独立 Python 环境，并安装固定版本的 Microsoft MarkItDown。本地开发目录也可以使用 `.venv-markitdown`。
-
-建议先选择 1-3 个代表性文件：
-
-1. 扫描原料目录并选择文件。
-2. 选择自动识别、只生成题目、只生成知识文档或仅转换 Markdown。
-3. 根据需要填写科目、标签和自定义整理要求。
-4. 运行标准提取或高质量双阶段审校。
-5. 逐项核对题干、答案、解析、事实、来源定位和警告。
-6. 批准后发布到应用管理知识库。
-
-原料目录始终只读。MarkItDown 子进程不会获得模型 API Key，也不会访问 URL。扫描式 PDF、图片和视频不会假装转换成功，当前会标记为需要 OCR 或暂不支持。详见 `docs/knowledge-builder.md`。
-
-所有题目、统计、作答内容、来源片段和候选 JSON 都放入显式的不可信数据边界。Prompt 与数据边界设计详见 `docs/prompt-design.md`。
-
-## 开发
+常用命令：
 
 ```powershell
-npm install
-npm run dev
-```
-
-## 验证
-
-```powershell
+npm run format:check
 npm run typecheck
 npm test
 npm run build
 npm run package
 ```
 
-完整架构和迁移状态见 `docs/`。
+## 项目结构
 
-## 开源边界
+```text
+src/main/       Electron 主进程、数据库、模型、知识库与学习服务
+src/preload/    安全的渲染层调用桥接
+src/renderer/   React + Fluent UI 桌面界面
+src/shared/     数据契约、默认配置与 Prompt
+tools/          MarkItDown 本地转换脚本
+tests/          数据库、知识库与构建流程测试
+docs/           架构、设计和使用说明
+```
 
-- 代码采用 [MIT License](LICENSE)。
-- 仓库不附带任何第三方题库、课程资料、受许可保护的知识包或模型 API Key。
-- 用户应仅导入自己有权处理的内容，并在发布 AI 生成内容前人工复核。
-- 本项目不是任何考试主管部门、培训机构或 Obsidian 官方产品，也不承诺考试成绩。
+## 参与项目
 
-欢迎阅读 [贡献指南](CONTRIBUTING.md)、[安全政策](SECURITY.md) 并通过 [Issues](https://github.com/mingruiy270-debug/lizhi-kaogong-workbench/issues) 提交问题。
+- 问题与建议：[GitHub Issues](https://github.com/mingruiy270-debug/lizhi-kaogong-workbench/issues)
+- 开发流程：[CONTRIBUTING.md](CONTRIBUTING.md)
+- 安全反馈：[SECURITY.md](SECURITY.md)
+- 更新记录：[CHANGELOG.md](CHANGELOG.md)
+- 许可证：[MIT License](LICENSE)
